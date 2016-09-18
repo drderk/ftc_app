@@ -55,6 +55,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  *
  * Use Android Studio to Copy this class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this Opmode to the Driver Station OpMode list
+ * testing
  */
 
 @Autonomous(name="Concept: Compass Calibration", group="Concept")
