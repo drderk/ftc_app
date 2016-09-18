@@ -53,7 +53,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  *   Once compete, the program will put the compass back into measurement mode and check to see if the
  *   calibration was successful.
  *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Use Android Studio to Copy this class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this Opmode to the Driver Station OpMode list
  */
 
