@@ -54,17 +54,19 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Teleop")
+@TeleOp(name="Teleop v.1.5")
 public class PinkTeamCode extends OpMode{
-    double buttonPos;
+    PinkTeamHardware robot       = new PinkTeamHardware(); // This is our robots electronics. Go to HardwarePushbot to add hardware.
     double left;
     double right;
-    double collector;
+    /* double collector;
+    double buttonPos;
     double flywheel;
     double release;
-
+    boolean getFlywheelSpeed;
+    //enum shooting {prepare, shoot, reload}
+    int shooting = 1;
     /* Declare OpMode members. */
-    PinkTeamHardware robot       = new PinkTeamHardware(); // This is our robots electronics. Go to HardwarePushbot to add hardware.
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -74,12 +76,12 @@ public class PinkTeamCode extends OpMode{
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
-        buttonPos = 0;
         left = 0;
         right = 0;
-        collector = 0;
-        flywheel = 0;
+        /* collector = 0;
+        buttonPos = 0;
         release = 0;
+        */
 
         robot.init(hardwareMap);
 
@@ -112,6 +114,7 @@ public class PinkTeamCode extends OpMode{
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         left = -gamepad1.left_stick_y;
         right = -gamepad1.right_stick_y;
+        /* flywheel = robot.flywheel.getPower();
 
         //Collect
         if(gamepad1.left_trigger > 0.1){
@@ -122,7 +125,7 @@ public class PinkTeamCode extends OpMode{
             collector = -1;
         }
         //Push Button
-        if(gamepad1.x){
+        /* if(gamepad1.x){
             buttonPos = 1;
         }
         //Retract Button
@@ -131,17 +134,36 @@ public class PinkTeamCode extends OpMode{
         }
 
         //Gunner Code
+
         if (gamepad2.right_trigger > 0.1) {
+            switch (shooting) {
+                case 1:
+                    if (getFlywheelSpeed) {
+                        shooting = 2;
+                    } else {
+                        robot.flywheel.setPower(1);
+                    }
+                    break;
+                case 2:
+                    if (getFlywheelSpeed == false) {
+                        shooting = 1;
+                    } else {
+                        robot.flywheel.setPower(1);
+                        robot.release.setPosition(1);
+                    }
+                    break;
 
+
+            }
         }
-
+*/
         //Set Values Below
-        robot.ButtonPusher.setPosition(buttonPos);
-        robot.Collector.setPower(collector);
-        robot.frontLeftMotor.setPower(left);
-        robot.frontRightMotor.setPower(right);
-        robot.backLeftMotor.setPower(left);
-        robot.backRightMotor.setPower(right);
+        /* robot.buttonPusher.setPosition(buttonPos);
+        robot.Collector.setPower(collector); */
+        robot.front_left.setPower(left);
+        robot.front_right.setPower(right);
+        robot.back_left.setPower(left);
+        robot.back_right.setPower(right);
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);

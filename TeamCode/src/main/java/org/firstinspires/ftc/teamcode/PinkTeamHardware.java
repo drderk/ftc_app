@@ -4,6 +4,7 @@ import android.hardware.Sensor;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.IrSeekerSensor;
@@ -34,15 +35,16 @@ import org.firstinspires.ftc.robotcontroller.external.samples.SensorMRIrSeeker;
 public class PinkTeamHardware
 {
     //Motors
-    public DcMotor          frontLeftMotor   =       null;
-    public DcMotor          frontRightMotor  =       null;
-    public DcMotor          backLeftMotor    =       null;
-    public DcMotor          backRightMotor   =       null;
-    public DcMotor          Flywheel         =       null;
+    public DcMotor          front_left   =       null;
+    public DcMotor          front_right  =       null;
+    public DcMotor          back_left    =       null;
+    public DcMotor          back_right   =       null;
+    public DcMotor          flywheel         =       null;
     public DcMotor          Collector        =       null;
 
     //Servos
-    public Servo            ButtonPusher     =       null;
+    public Servo            buttonPusher     =       null;
+    public Servo            release          =       null;
 
     //Sensors
     public LightSensor      bw_sensor        =       null;
@@ -65,33 +67,35 @@ public class PinkTeamHardware
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        frontLeftMotor   = hwMap.dcMotor.get("front_left_drive");
-        frontRightMotor  = hwMap.dcMotor.get("front_right_drive");
-        backLeftMotor   = hwMap.dcMotor.get("back_left_drive");
-        backRightMotor  = hwMap.dcMotor.get("back_right_drive");
-        frontLeftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        backLeftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        bw_sensor = hwMap.lightSensor.get("bw_sensor");
+        front_left   = hwMap.dcMotor.get("front_left");
+        front_right  = hwMap.dcMotor.get("front_right");
+        back_left   = hwMap.dcMotor.get("back_left");
+        back_right  = hwMap.dcMotor.get("back_right");
+        front_left.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        front_right.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        back_left.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        back_right.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        /* bw_sensor = hwMap.lightSensor.get("bw_sensor");
         IR_sensor1 = hwMap.irSeekerSensor.get("IR_sensor1");
         IR_sensor2 = hwMap.irSeekerSensor.get("IR_sensor2");
-        Flywheel = hwMap.dcMotor.get("Flywheel");
+        flywheel = hwMap.dcMotor.get("flywheel");
         Collector = hwMap.dcMotor.get("Collector");
-        ButtonPusher = hwMap.servo.get("ButtonPusher");
+        buttonPusher = hwMap.servo.get("buttonPusher");
+        release = hwMap.servo.get("release");
+        */
 
         // Set all motors to zero power
-        frontLeftMotor.setPower(0);
-        frontRightMotor.setPower(0);
-        backLeftMotor.setPower(0);
-        backRightMotor.setPower(0);
+        front_left.setPower(0);
+        front_right.setPower(0);
+        back_left.setPower(0);
+        back_right.setPower(0);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        front_left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        front_right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        back_right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        back_left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos
     }
