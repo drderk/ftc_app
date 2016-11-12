@@ -59,11 +59,11 @@ public class PinkTeamCode extends OpMode{
     PinkTeamHardware robot       = new PinkTeamHardware(); // This is our robots electronics. Go to HardwarePushbot to add hardware.
     double left;
     double right;
-    /* double collector;
+    double collector;
     double buttonPos;
     double flywheel;
     double release;
-    boolean getFlywheelSpeed;
+    public boolean getFlywheelSpeed;
     //enum shooting {prepare, shoot, reload}
     int shooting = 1;
     /* Declare OpMode members. */
