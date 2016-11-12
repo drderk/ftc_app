@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.PinkTeamHardware;
  *
  * Auto IN - Score N Park
  *
- * Starts near the ramp
+ * Starts near the ramps
  * Drives across the ramp
  * Backs up to the beacon
  * Scores the climbers
