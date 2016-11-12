@@ -32,12 +32,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /**
  * This file provides basic Telop driving for a Pushbot robot.
@@ -54,33 +52,11 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Teleop v.1.5")
-public class PinkTeamCode extends OpMode{
-    PinkTeamHardware robot       = new PinkTeamHardware(); // This is our robots electronics. Go to HardwarePushbot to add hardware.
-    double left;
-    double right;
-    double collector;
-    double buttonPos;
-    double flywheel;
-    double release;
-    public boolean getFlywheelSpeed;
-    //enum shooting {prepare, shoot, reload}
-    int shooting = 1;
-    /* Declare OpMode members. */
-
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
+@TeleOp(name="Sensor Test")
+public class SensorsTest extends OpMode{
+    PinkTeamHardwareSensors robot       = new PinkTeamHardwareSensors(); // This is our robots electronics. Go to HardwarePushbot to add hardware.
     @Override
     public void init() {
-        /* Initialize the hardware variables.
-         * The init() method of the hardware class does all the work here
-         */
-        left = 0;
-        right = 0;
-        collector = 0;
-        //buttonPos = 0;
-        //release = 0;
 
         robot.init(hardwareMap);
 
@@ -108,64 +84,10 @@ public class PinkTeamCode extends OpMode{
      */
     @Override
     public void loop() {
-        //Base Driver Code
-
-        // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-        left = -gamepad1.left_stick_y;
-        right = -gamepad1.right_stick_y;
-         //flywheel = robot.flywheel.getPower();
-
-        //Collect
-        if(gamepad1.left_trigger > 0.1){
-            collector = 1;
-        }
-        //Eject
-        else if(gamepad1.right_trigger > 0.1) {
-            collector = -1;
-        }
-        //Push Button
-        /* if(gamepad1.x){
-            buttonPos = 1;
-        }
-        //Retract Button
-        else if(gamepad1.x == false){
-            buttonPos = 0;
-        }
-
-        //Gunner Code
-
-        if (gamepad2.right_trigger > 0.1) {
-            switch (shooting) {
-                case 1:
-                    if (getFlywheelSpeed) {
-                        shooting = 2;
-                    } else {
-                        robot.flywheel.setPower(1);
-                    }
-                    break;
-                case 2:
-                    if (getFlywheelSpeed == false) {
-                        shooting = 1;
-                    } else {
-                        robot.flywheel.setPower(1);
-                        robot.release.setPosition(1);
-                    }
-                    break;
-
-
-            }
-        }
-*/
-        //Set Values Below
-        /* robot.buttonPusher.setPosition(buttonPos);
-        robot.Collector.setPower(collector); */
-        robot.front_left.setPower(left);
-        robot.front_right.setPower(right);
-        robot.back_left.setPower(left);
-        robot.back_right.setPower(right);
-        // Send telemetry message to signify robot running;
-        telemetry.addData("left",  "%.2f", left);
-        telemetry.addData("right", "%.2f", right);
+        double US = robot.ultraSound.getDistance(DistanceUnit.INCH);
+        double GyroReading = robot.gyro.getHeading();
+        telemetry.addData("Ultrasonic",US);
+        telemetry.addData("Gyro",GyroReading);
         updateTelemetry(telemetry);
     }
 

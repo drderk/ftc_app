@@ -1,25 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.hardware.Sensor;
-
-import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.I2cDevice;
-import com.qualcomm.robotcore.hardware.IrSeekerSensor;
-import com.qualcomm.robotcore.hardware.LightSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorHTColor;
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorMRColor;
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorMRIrSeeker;
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorMROpticalDistance;
 
 /**
  * This is NOT an opmode.
@@ -37,7 +23,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.SensorMROpticalDis
  * Servo channel:  Servo to open left claw:  "left_hand"
  * Servo channel:  Servo to open right claw: "right_hand"
  */
-public class PinkTeamHardware
+public class PinkTeamHardwareSensors
 {
     //Motors
     public DcMotor          front_left         =       null;
@@ -61,7 +47,7 @@ public class PinkTeamHardware
     private ElapsedTime period  = new ElapsedTime();
 
     /* Constructor */
-    public PinkTeamHardware(){
+    public PinkTeamHardwareSensors(){
 
     }
 
@@ -88,12 +74,10 @@ public class PinkTeamHardware
         //IR_sensor1 = hwMap.irSeekerSensor.get("IR_sensor1");
         //IR_sensor2 = hwMap.irSeekerSensor.get("IR_sensor2");
         //flywheel = hwMap.dcMotor.get("flywheel");
-        Collector = hwMap.dcMotor.get("Collector");
+        //Collector = hwMap.dcMotor.get("Collector");
         //buttonPusher = hwMap.servo.get("buttonPusher");
         //release = hwMap.servo.get("release");
-        //ultraSound = hwMap.get(ModernRoboticsI2cRangeSensor.class,"ultraSound");
-
-
+        ultraSound = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultraSound");
         // Set all motors to zero power
         front_left.setPower(0);
         front_right.setPower(0);

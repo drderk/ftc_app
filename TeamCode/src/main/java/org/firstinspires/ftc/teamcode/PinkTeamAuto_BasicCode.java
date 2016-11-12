@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.PinkNavigate;
 import org.firstinspires.ftc.teamcode.PinkTeamHardware;
 
@@ -14,13 +15,13 @@ import org.firstinspires.ftc.teamcode.PinkTeamHardware;
  *
  * Auto IN - Score N Park
  *
- * Starts near the ramps
+ * Starts near the ramp
  * Drives across the ramp
  * Backs up to the beacon
  * Scores the climbers
  * Parks
  */
-@Autonomous (name= "Auto1")
+@Autonomous (name= "AutoBasic")
 public class PinkTeamAuto_BasicCode extends LinearOpMode {
     PinkTeamHardware robot   = new PinkTeamHardware();   // Use a Pushbot's hardware
     static double leftWheelPosPrevious = 0;     // Used to calculate velocity for PID control
@@ -28,7 +29,7 @@ public class PinkTeamAuto_BasicCode extends LinearOpMode {
     static double previousHeading = 0;          // Used to calculate velocity for PID control
     static int autoStep = 0;
     static boolean delayButtonPrevious = false;
-    ElapsedTime time;
+    private ElapsedTime     time = new ElapsedTime();
     double currentTime;
     double sequenceStartTime;
     double autonomousStartTime;
@@ -54,19 +55,16 @@ public class PinkTeamAuto_BasicCode extends LinearOpMode {
 
         double leftWheelPos;
         double rightWheelPos;
-        double rollerPos;
         double leftWheelVel;
         double rightWheelVel;
         double avgWheelVel;
         double angularVel;
         boolean robotAutoConfigured = false;
         boolean redAlliance = true;
-        boolean pressRightButton;
         double delaySeconds = 0;
         int targetAngle = 0;
         int targetDistance = 0;
         int currentHeading = 0;
-        time = new ElapsedTime();
         int redBrightness = 1;
         // Initialize
         autoStep = 0;
@@ -151,7 +149,7 @@ public class PinkTeamAuto_BasicCode extends LinearOpMode {
                     if (PinkNavigate.resetBasePosition())
                     {
                         PinkNavigate.runWithoutEncoders();
-                        sequenceStartTime = currentTime;  // Mark time for delay reference
+                        time.reset();  // Mark time for delay reference
                         autoStep = 1;
                     }
                     break;
@@ -159,7 +157,7 @@ public class PinkTeamAuto_BasicCode extends LinearOpMode {
                 case 1:     // Delay if need be
                 {
                     targetBeaconArmPos = BEACON_SERVO_NEUTRAL_POS;
-                    if ((currentTime - sequenceStartTime) >= delaySeconds)
+                    if ((time.seconds()) >= delaySeconds)
                     {
                         robot.gyro.resetZAxisIntegrator();
                         autoStep = 2;
@@ -170,14 +168,27 @@ public class PinkTeamAuto_BasicCode extends LinearOpMode {
                 {
                     targetBeaconArmPos = BEACON_SERVO_NEUTRAL_POS;
                     targetAngle = 0;
-                    targetDistance = 22;    //22
+                    targetDistance = 34;    //22
                     if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
                     {
+                        time.reset();
                         autoStep = 3;
                     }
                     break;
                 }
-                case 3:     // Turn and drive past the ramp
+                case 3:     // Shoot (waiting for now)
+                {
+                    targetBeaconArmPos = BEACON_SERVO_NEUTRAL_POS;
+                    targetAngle = 0;
+                    targetDistance = 34;    //34
+                    PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7);
+                    if ((time.seconds()) >= 2)
+                    {
+                        autoStep = 4;
+                    }
+                    break;
+                }
+                case 4:     // Turn and drive
                 {
                     if (redAlliance)
                     {
@@ -187,33 +198,37 @@ public class PinkTeamAuto_BasicCode extends LinearOpMode {
                     {
                         targetAngle = 45;
                     }
-                    targetDistance = 82;        //60+22
+                    targetDistance = 58;        //34+24
                     if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
                     {
-                        autoStep = 4;
+                        targetAngle = 0;
+                        autoStep = 5;
                     }
                     break;
                 }
-                case 4:     // Turn and drive in front of the beacon
+                case 5:     // Turn and drive in front of the beacon
                 {
                     targetBeaconArmPos = BEACON_SERVO_NEUTRAL_POS;
-                    targetAngle = 0;
+
                     if (redAlliance)
                     {
-                        targetDistance = 97;  //60+22+15
+                        if(robot.ultraSound.getDistance(DistanceUnit.INCH) > 1){
+                            targetAngle++;
+                        }
+                        targetDistance = 70;  //34+24+12
                     }
                     else
                     {
-                        targetDistance = 97;  //60+22+15
+                        targetDistance = 70;  //34+24+12
                     }
                     if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
                     {
-                        autoStep = 5;
-                        sequenceStartTime = currentTime;  // Mark time to let the bucket move to pos
+                        autoStep = 6;
+                        time.reset();  // Mark time to let the bucket move to pos
                     }
                     break;
                 }
-                case 5:     // Back up near the wall to let the sensor see
+                case 6:     // Back up near the wall to let the sensor see
                 {
  //                   redBrightness = BeaconColor.red();
                     if (redAlliance)
@@ -240,13 +255,13 @@ public class PinkTeamAuto_BasicCode extends LinearOpMode {
                     }
                     targetDistance = 85;   //60+22+15-12
                     PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7);
-                    if ((currentTime - sequenceStartTime) > 0.5)   // Seconds
+                    if ((time.seconds()) > 0.5)   // Seconds
                     {
-                        autoStep = 6;
+                        autoStep = 7;
                     }
                     break;
                 }
-                case 6:     // Back up to the wall
+                case 7:     // Back up to the wall
                 {
                     // targetBeaconArmPos stays the same for the dump operation
                     if (redAlliance)
@@ -260,7 +275,7 @@ public class PinkTeamAuto_BasicCode extends LinearOpMode {
                     targetDistance = 79;   //60+22+12-18
                     if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
                     {
-                        sequenceStartTime = currentTime;  // Mark time to let the bucket move to pos
+                        time.reset();  // Mark time to let the bucket move to pos
                         autoStep = 11;
                     }
                     break;
@@ -278,7 +293,7 @@ public class PinkTeamAuto_BasicCode extends LinearOpMode {
                     }
                     targetDistance = 79;   //60+22+12-18
                     PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 1.0);
-                    if ((currentTime - sequenceStartTime) > 1.0)   // Seconds
+                    if ((time.seconds()) > 1.0)   // Seconds
                     {
                         autoStep = 12;
                     }
@@ -343,7 +358,7 @@ public class PinkTeamAuto_BasicCode extends LinearOpMode {
                     break;
                 }
             }
-
+              //robot.buttonPusher.setPosition(targetBeaconArmPos);
 //            telemetry.addData("Target Position", targetDistance);
 //            telemetry.addData("Current Position", (front_left.getCurrentPosition() + front_left.getCurrentPosition())/206.0);
 //            telemetry.addData("Current Position", (front_left.getCurrentPosition() + front_left.getCurrentPosition())/206.0);
