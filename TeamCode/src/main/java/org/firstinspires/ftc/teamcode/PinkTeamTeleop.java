@@ -54,8 +54,8 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Teleop v.1.5")
-public class PinkTeamCode extends OpMode{
+@TeleOp(name="Teleop v.1.6")
+public class PinkTeamTeleop extends OpMode{
     PinkTeamHardware robot       = new PinkTeamHardware(); // This is our robots electronics. Go to HardwarePushbot to add hardware.
     double left;
     double right;
@@ -63,9 +63,9 @@ public class PinkTeamCode extends OpMode{
     double buttonPos;
     double flywheel;
     double release;
-    public boolean getFlywheelSpeed;
+    //public boolean getFlywheelSpeed;
     //enum shooting {prepare, shoot, reload}
-    int shooting = 1;
+    //int shooting = 1;
     /* Declare OpMode members. */
 
     /*
@@ -79,13 +79,14 @@ public class PinkTeamCode extends OpMode{
         left = 0;
         right = 0;
         collector = 0;
-        //buttonPos = 0;
-        //release = 0;
+        buttonPos = 0;
+        release = 0;
+        flywheel = 0;
 
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");    //
+        telemetry.addData("Say", "Good Luck and Have Fun Drivers");    //
         updateTelemetry(telemetry);
     }
 
@@ -113,7 +114,6 @@ public class PinkTeamCode extends OpMode{
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         left = -gamepad1.left_stick_y;
         right = -gamepad1.right_stick_y;
-         //flywheel = robot.flywheel.getPower();
 
         //Collect
         if(gamepad1.left_trigger > 0.1){
@@ -123,42 +123,40 @@ public class PinkTeamCode extends OpMode{
         else if(gamepad1.right_trigger > 0.1) {
             collector = -1;
         }
-        //Push Button
-        /* if(gamepad1.x){
-            buttonPos = 1;
-        }
-        //Retract Button
-        else if(gamepad1.x == false){
-            buttonPos = 0;
+        //Restore to 0 power
+        else if(gamepad1.right_trigger < 0.1 && gamepad1.left_trigger < 0.1){
+            collector = 0;
         }
 
         //Gunner Code
 
-        if (gamepad2.right_trigger > 0.1) {
-            switch (shooting) {
-                case 1:
-                    if (getFlywheelSpeed) {
-                        shooting = 2;
-                    } else {
-                        robot.flywheel.setPower(1);
-                    }
-                    break;
-                case 2:
-                    if (getFlywheelSpeed == false) {
-                        shooting = 1;
-                    } else {
-                        robot.flywheel.setPower(1);
-                        robot.release.setPosition(1);
-                    }
-                    break;
-
-
-            }
+        //Push Button
+         if(gamepad2.x){
+            buttonPos = 1;
         }
-*/
+        //Retract Button
+        else if(gamepad2.x == false){
+            buttonPos = 0;
+        }
+
+        if (gamepad2.right_trigger > 0.1) {
+            flywheel = 1;
+        }
+        else {
+            flywheel = 0;
+        }
+        if (gamepad2.right_bumper){
+            release = 1;
+        }
+        else {
+            release = 0;
+        }
+
         //Set Values Below
-        /* robot.buttonPusher.setPosition(buttonPos);
-        robot.Collector.setPower(collector); */
+        robot.release.setPosition(release);
+        robot.buttonPusher.setPosition(buttonPos);
+        robot.Collector.setPower(collector);
+        robot.flywheel.setPower(flywheel);
         robot.front_left.setPower(left);
         robot.front_right.setPower(right);
         robot.back_left.setPower(left);
@@ -166,6 +164,9 @@ public class PinkTeamCode extends OpMode{
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
+        telemetry.addData("release position",robot.release.getPosition());
+        telemetry.addData("button position",robot.buttonPusher.getPosition());
+
         updateTelemetry(telemetry);
     }
 

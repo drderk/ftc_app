@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import android.hardware.Sensor;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -40,22 +42,22 @@ import org.firstinspires.ftc.robotcontroller.external.samples.SensorMROpticalDis
 public class PinkTeamHardware
 {
     //Motors
-    public DcMotor          front_left         =       null;
-    public DcMotor          front_right        =       null;
-    public DcMotor          back_left          =       null;
-    public DcMotor          back_right         =       null;
-    public DcMotor          flywheel           =       null;
-    public DcMotor          Collector          =       null;
-    public GyroSensor       gyro               =       null;
+    public DcMotor                      front_left         =       null;
+    public DcMotor                      front_right        =       null;
+    public DcMotor                      back_left          =       null;
+    public DcMotor                      back_right         =       null;
+    public DcMotor                      flywheel           =       null;
+    public DcMotor                      Collector          =       null;
 
     //Servos
-    //public Servo            buttonPusher       =       null;
-    //public Servo            release            =       null;
+    public Servo                        buttonPusher       =       null;
+    public Servo                        release            =       null;
 
     //Sensors
-    //public ColorSensor      colorSensor        =       null;
     public ModernRoboticsI2cRangeSensor ultraSound         =       null;
-
+    public ModernRoboticsI2cGyro        gyro               =       null;
+    public LightSensor                  bwSensor           =       null;
+    public ModernRoboticsI2cColorSensor colorSensor        =       null;
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
@@ -76,22 +78,21 @@ public class PinkTeamHardware
         back_left   = hwMap.dcMotor.get("back_left");
         back_right  = hwMap.dcMotor.get("back_right");
 
-        gyro        = hwMap.gyroSensor.get("gyro");
-        //buttonPusher = hwMap.servo.get("buttonPusher");
-        //colorSensor = hwMap.colorSensor.get("colorSensor");
+        gyro        = hwMap.get(ModernRoboticsI2cGyro.class,"gyro");
+        buttonPusher = hwMap.servo.get("buttonPusher");
+        colorSensor = hwMap.get(ModernRoboticsI2cColorSensor.class,"colorSensor");
+        bwSensor    = hwMap.lightSensor.get("bwSensor");
 
         front_left.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         front_right.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         back_left.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         back_right.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        //colorSensor = hwMap.colorSensor.get("colorSensor");
         //IR_sensor1 = hwMap.irSeekerSensor.get("IR_sensor1");
         //IR_sensor2 = hwMap.irSeekerSensor.get("IR_sensor2");
-        //flywheel = hwMap.dcMotor.get("flywheel");
+        flywheel = hwMap.dcMotor.get("flywheel");
         Collector = hwMap.dcMotor.get("Collector");
-        //buttonPusher = hwMap.servo.get("buttonPusher");
-        //release = hwMap.servo.get("release");
-        //ultraSound = hwMap.get(ModernRoboticsI2cRangeSensor.class,"ultraSound");
+        release = hwMap.servo.get("release");
+        ultraSound = hwMap.get(ModernRoboticsI2cRangeSensor.class,"ultraSound");
 
 
         // Set all motors to zero power
