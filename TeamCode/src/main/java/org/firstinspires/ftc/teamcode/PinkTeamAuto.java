@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 /**
  Code Modified by Derek Perdomo
  */
-@Autonomous (name= "AutoBasic")
+@Autonomous (name= "Auto")
 public class PinkTeamAuto extends LinearOpMode {
     PinkTeamHardware robot   = new PinkTeamHardware();   // Use a Pushbot's hardware
     static double leftWheelPosPrevious = 0;     // Used to calculate velocity for PID control
@@ -297,6 +297,7 @@ public class PinkTeamAuto extends LinearOpMode {
                         targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                         autoStep = 11;
                     }
+                    break;
                 }
                 case 11:     // Drive towards the beacon until white line is seen
                 {
@@ -374,6 +375,7 @@ public class PinkTeamAuto extends LinearOpMode {
                         targetBeaconArmPos = 0;
                         autoStep = 15;
                     }
+                    break;
                 }
                 case 15:     // turn towards opposing beacon
                 {
@@ -436,7 +438,7 @@ public class PinkTeamAuto extends LinearOpMode {
                     }
                     break;
                 }
-                case 18:     // Wait for teleop to start
+                case 17:     // Wait for teleop to start
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     PinkNavigate.stopBase();
