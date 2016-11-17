@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 /**
  Code Modified by Derek Perdomo
  */
-@Autonomous (name= "Auto")
+@Autonomous (name= "Shoot and Button")
 public class PinkTeamAuto extends LinearOpMode {
     PinkTeamHardware robot   = new PinkTeamHardware();   // Use a Pushbot's hardware
     static double leftWheelPosPrevious = 0;     // Used to calculate velocity for PID control
@@ -134,7 +134,7 @@ public class PinkTeamAuto extends LinearOpMode {
                     {
                         PinkNavigate.runWithoutEncoders();
                         time.reset();  // Mark time for delay reference
-                        autoStep = 1;
+                        autoStep = 10;
                     }
                     break;
                 }
@@ -144,11 +144,11 @@ public class PinkTeamAuto extends LinearOpMode {
                     if ((time.seconds()) >= delaySeconds)
                     {
                         robot.gyro.resetZAxisIntegrator();
-                        autoStep = 2;
+                        autoStep = 20;
                     }
                     break;
                 }
-                case 2:     // Drive straight out to clear the ramp
+                case 20:     // Drive straight out to clear the ramp
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     targetAngle = 0;
@@ -156,11 +156,11 @@ public class PinkTeamAuto extends LinearOpMode {
                     if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
                     {
                         time.reset();
-                        autoStep = 3;
+                        autoStep = 30;
                     }
                     break;
                 }
-                case 3:     // Shoot (waiting for now)
+                case 30:     // Shoot (waiting for now)
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     targetAngle = 0;
@@ -173,11 +173,39 @@ public class PinkTeamAuto extends LinearOpMode {
                     }
                     if ((time.seconds()) >= 2)
                     {
-                        autoStep = 4;
+                        autoStep = 40;
                     }
                     break;
                 }
-                case 4:     // Turn towards the wall
+
+                case 40:     // Turn towards the wall
+                {
+                    if (blueAlliance)
+                    {
+                        targetAngle = 45;
+                    }
+                    else
+                    {
+                        targetAngle = -45;
+                    }
+                    targetDistance = 34;
+                    if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
+                    {
+                        autoStep = 50;
+                    }
+                    break;
+                }
+                case 50:     // drive towards the beacon
+                {
+                    targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
+                    targetDistance = 51;
+                        if(PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7)){
+                            autoStep = 60;
+                            time.reset();  // Mark time to let the bucket move to pos
+                        }
+                    break;
+                    }
+                case 60:     // Turn towards the beacon
                 {
                     if (blueAlliance)
                     {
@@ -187,42 +215,24 @@ public class PinkTeamAuto extends LinearOpMode {
                     {
                         targetAngle = -90;
                     }
-                    targetDistance = 34;        //34
+                    targetDistance = 51;
                     if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
                     {
-                        autoStep = 5;
+                        autoStep = 70;
                     }
                     break;
                 }
-                case 5:     // drive towards the wall
+                case 70:     // drive towards the beacon
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     targetDistance = 85;
-                    PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7);
-                        if(robot.ultraSound.getDistance(DistanceUnit.INCH) < 5){
-                            autoStep = 6;
-                            time.reset();  // Mark time to let the bucket move to pos
-                        }
-                    break;
-                    }
-                case 6:     // Turn towards the beacon
-                {
-                    if (blueAlliance)
-                    {
-                        targetAngle = 0;
-                    }
-                    else
-                    {
-                        targetAngle = 180;
-                    }
-                    targetDistance = 80;
-                    if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
-                    {
-                        autoStep = 7;
+                    if(PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7)){
+                        autoStep =80;
+                        time.reset();  // Mark time to let the bucket move to pos
                     }
                     break;
                 }
-                case 7:     // Drive towards the beacon until white line is seen
+                case 80:     // turn to Beacon side
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     if (blueAlliance)
@@ -233,23 +243,15 @@ public class PinkTeamAuto extends LinearOpMode {
                     {
                         targetAngle = 180;
                     }
-                    if (blueAlliance)
-                    {
-                        targetDistance = 115;
-                    }
-                    else
-                    {
-                        targetDistance = 45;
-                    }
-                    PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7);
-                    if (robot.bwSensor.getLightDetected() > whiteLine)
+                    targetDistance = 85;
+                    if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
                     {
                         time.reset();
-                        autoStep = 8;
+                        autoStep = 90;
                     }
                     break;
                 }
-                case 8:     // check color
+                case 90:     // check color
                 {
                     if (robot.colorSensor.blue() > blueColor) {
                         blue = true;
@@ -257,49 +259,49 @@ public class PinkTeamAuto extends LinearOpMode {
                         blue = false;
                     }
                     if (time.seconds() > 0.1) {
-                        autoStep = 9;
+                        autoStep = 100;
                     }
                     break;
                 }
-                case 9:     // Fix color
+                case 100:     // Fix color
                 {
  //                   blueBrightness = BeaconColor.red();
                     if (blueAlliance && blue)
                     {
-                            targetDistance = 112;
+                            targetDistance = 82;
                             targetAngle    = 0;
                         }
                     else if (blueAlliance && (blue ==false))
                         {
-                            targetDistance = 118;
+                            targetDistance = 88;
                             targetAngle    = 0;
                         }
                     else if ((blueAlliance == false) && blue )
                     {
-                            targetDistance = 42;
+                            targetDistance = 88;
                             targetAngle    = 180;
                         }
                     else
                         {
-                            targetDistance = 48;
+                            targetDistance = 82;
                             targetAngle    = 180;
                         }
                     if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))   // Seconds
                     {
-                        autoStep = 10;
+                        autoStep = 110;
                     }
                     break;
                 }
-                case 10:                //Press button
+                case 110:                //Press button
                 {
                     targetBeaconArmPos = BUTTON_PUSH_POS;
                     if(time.seconds() > 1){
                         targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
-                        autoStep = 11;
+                        autoStep = 120;
                     }
                     break;
                 }
-                case 11:     // Drive towards the beacon until white line is seen
+                case 120:     // Drive towards the beacon until white line is seen
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     if (blueAlliance)
@@ -312,21 +314,21 @@ public class PinkTeamAuto extends LinearOpMode {
                     }
                     if (blueAlliance)
                     {
-                        targetDistance = 139; //115 + 24
+                        targetDistance = 130; //115 + 24
                     }
                     else
                     {
-                        targetDistance = 21;
+                        targetDistance = 40;
                     }
                     PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7);
                     if (robot.bwSensor.getLightDetected() > whiteLine)
                     {
                         time.reset();
-                        autoStep = 12;
+                        autoStep = 130;
                     }
                     break;
                 }
-                case 12:     // check color
+                case 130:     // check color
                 {
                     if (robot.colorSensor.blue() > blueColor) {
                         blue = true;
@@ -334,85 +336,71 @@ public class PinkTeamAuto extends LinearOpMode {
                         blue = false;
                     }
                     if (time.seconds() > 0.1) {
-                        autoStep = 13;
+                        autoStep = 140;
                     }
                     break;
                 }
-                case 13:     // Fix color
+                case 140:     // Fix color
                 {
                     //                   blueBrightness = BeaconColor.red();
                     if (blueAlliance && blue)
                     {
-                        targetDistance = 112;
+                        targetDistance = 127;
                         targetAngle    = 0;
                     }
                     else if (blueAlliance && (blue ==false))
                     {
-                        targetDistance = 118;
+                        targetDistance = 133;
                         targetAngle    = 0;
                     }
                     else if ((blueAlliance == false) && blue )
                     {
-                        targetDistance = 42;
+                        targetDistance = 43;
                         targetAngle    = 180;
                     }
                     else
                     {
-                        targetDistance = 48;
+                        targetDistance = 37;
                         targetAngle    = 180;
                     }
                     if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))   // Seconds
                     {
                         time.reset();
-                        autoStep = 14;
+                        autoStep = 150;
                     }
                     break;
                 }
-                case 14:
+                case 150:
                 {
                     targetBeaconArmPos = 1;
                     if(time.seconds() > 1){
                         targetBeaconArmPos = 0;
-                        autoStep = 15;
+                        autoStep = 160;
                     }
                     break;
                 }
-                case 15:     // turn towards opposing beacon
+                case 160:     // turn towards opposing beacon
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     if (blueAlliance)
                     {
                         targetAngle = -45;
+                        targetDistance = 130;
                     }
                     else
                     {
                         targetAngle = 225;
+                        targetDistance = 40;
                     }
-                    if (blueAlliance && blue)
-                    {
-                        targetDistance = 112;
-                    }
-                    else if (blueAlliance && (blue ==false))
-                    {
-                        targetDistance = 118;
-                    }
-                    else if ((blueAlliance == false) && blue )
-                    {
-                        targetDistance = 42;
-                    }
-                    else
-                    {
-                        targetDistance = 48;
-                    }
-                    PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7);
-                    if (robot.bwSensor.getLightDetected() > whiteLine)
+
+                    if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
                     {
                         time.reset();
-                        autoStep = 16;
+                        autoStep = 170;
                     }
                     break;
                 }
-                case 16:     // Drive towards opposing beacon
+                case 170:     // Drive towards opposing beacon
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     if (blueAlliance)
@@ -425,20 +413,20 @@ public class PinkTeamAuto extends LinearOpMode {
                     }
                     if (blueAlliance)
                     {
-                        targetDistance = 152; //115 + 24
+                        targetDistance = 164 ; //115 + 24
                     }
                     else
                     {
-                        targetDistance = 8;
+                        targetDistance = 6;
                     }
                     if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
                     {
                         time.reset();
-                        autoStep = 17;
+                        autoStep = 180;
                     }
                     break;
                 }
-                case 17:     // Wait for teleop to start
+                case 180:     // Wait for teleop to start
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     PinkNavigate.stopBase();

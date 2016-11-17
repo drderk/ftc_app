@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -86,6 +87,16 @@ public class SensorsTest extends OpMode{
     public void loop() {
         double US = robot.ultraSound.getDistance(DistanceUnit.INCH);
         double GyroReading = robot.gyro.getHeading();
+        double leftEncoder = robot.front_left.getCurrentPosition();
+        double rightEncoder = robot.front_right.getCurrentPosition();
+
+        if (gamepad1.a){
+            robot.front_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.front_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+        telemetry.addData("Left Encoder", leftEncoder);
+        telemetry.addData("Right Encoder", rightEncoder);
+        telemetry.addData("Hit A to reset", "Hit A to reset");
         telemetry.addData("Ultrasonic",US);
         telemetry.addData("Gyro",GyroReading);
         updateTelemetry(telemetry);
