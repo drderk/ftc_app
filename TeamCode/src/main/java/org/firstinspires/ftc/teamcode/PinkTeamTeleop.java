@@ -54,9 +54,9 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Teleop v.1.6")
+@TeleOp(name="Teleop v.1.7")
 public class PinkTeamTeleop extends OpMode{
-    PinkTeamHardware robot       = new PinkTeamHardware(); // This is our robots electronics. Go to HardwarePushbot to add hardware.
+    PinkTeamHardwareTeleopOnly robot       = new PinkTeamHardwareTeleopOnly(); // This is our robots electronics. Go to HardwarePushbot to add hardware.
     double left;
     double right;
     double collector;
@@ -110,7 +110,6 @@ public class PinkTeamTeleop extends OpMode{
     @Override
     public void loop() {
         //Base Driver Code
-
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         left = -gamepad1.left_stick_y;
         right = -gamepad1.right_stick_y;
@@ -135,21 +134,24 @@ public class PinkTeamTeleop extends OpMode{
             buttonPos = 1;
         }
         //Retract Button
-        else if(gamepad2.x == false){
-            buttonPos = 0;
+        else if(gamepad2.b){
+            buttonPos = -1;
         }
-
+        else {
+             buttonPos = 0;
+         }
+        //Spin up the Flywheel
         if (gamepad2.right_trigger > 0.1) {
-            flywheel = 1;
+            flywheel = 0.85;
         }
         else {
             flywheel = 0;
         }
         if (gamepad2.right_bumper){
-            release = 1;
+            release = 0.1;
         }
         else {
-            release = 0;
+            release = 0.8;
         }
 
         //Set Values Below

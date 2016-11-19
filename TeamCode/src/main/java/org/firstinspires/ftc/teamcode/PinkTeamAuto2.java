@@ -8,9 +8,12 @@ import com.qualcomm.robotcore.util.Range;
 /**
  Code Modified by Derek Perdomo
  */
-@Autonomous (name= "Just Shoot It")
+@Autonomous (name= "Just Shoot It V.1.2")
 public class PinkTeamAuto2 extends LinearOpMode {
+
     PinkTeamHardware robot   = new PinkTeamHardware();   // Use a Pushbot's hardware
+    PinkNavigate nav = new PinkNavigate();
+
     static double leftWheelPosPrevious = 0;     // Used to calculate velocity for PID control
     static double rightWheelPosPrevious = 0;    // Used to calculate velocity for PID control
     static double previousHeading = 0;          // Used to calculate velocity for PID control
@@ -23,7 +26,7 @@ public class PinkTeamAuto2 extends LinearOpMode {
 
     // Other preset positions are defined in PinkTeleop.java
     static final double BUTTON_PUSH_POS = 1;
-    static final double BUTTON_PUSH_NEUTRAL = 90;
+    static final double BUTTON_PUSH_NEUTRAL = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -36,20 +39,26 @@ public class PinkTeamAuto2 extends LinearOpMode {
         double avgWheelVel;
         double angularVel;
         boolean robotAutoConfigured = false;
-        boolean blueAlliance = true;
+        boolean redAlliance = true;
         double delaySeconds = 0;
         int targetAngle = 0;
         int targetDistance = 0;
         int currentHeading = 0;
 
         double flywheel = 0;
-        double release  = 0;
+        double release  = 0.8;
+        double Collector = 0;
         // Initialize
         autoStep = 0;
 
-        while (!PinkNavigate.resetBasePosition())
+        robot.init(hardwareMap);
+
+        nav.robot = robot;
+
+        while (!nav.resetBasePosition())
         {
             telemetry.addData("INIT", "Resetting BASE Position");
+            telemetry.update();
         }
 
         // Calibrate the gyro - beware of infinite loops here if it fails cal
@@ -57,6 +66,7 @@ public class PinkTeamAuto2 extends LinearOpMode {
         while (robot.gyro.isCalibrating())
         {
             telemetry.addData("INIT", "Calibrating GYRO Angle");
+            telemetry.update();
             Thread.sleep(100);
         }
 
@@ -77,18 +87,18 @@ public class PinkTeamAuto2 extends LinearOpMode {
 
             if (gamepad1.x)     // Blue button
             {
-                blueAlliance = true;
+                redAlliance = false;
             } else if (gamepad1.b)     // Red button
             {
-                blueAlliance = false;
+                redAlliance = true;
             }
 
-            if (blueAlliance)
-            {
-                telemetry.addData("Alliance Color", "Blue");
-            } else
+            if (redAlliance)
             {
                 telemetry.addData("Alliance Color", "Red");
+            } else
+            {
+                telemetry.addData("Alliance Color", "Blue");
             }
 
             if (gamepad1.start)
@@ -97,8 +107,10 @@ public class PinkTeamAuto2 extends LinearOpMode {
             }
             telemetry.addData("Auto Delay ", delaySeconds);
             telemetry.addData("INIT", "Press start button to configure");
+            telemetry.update();
         }
         telemetry.addData("INIT", "PRESS PLAY TO START");
+        telemetry.update();
         waitForStart();
         //Clear Autonomous start settings from screen
         telemetry.clearAll();
@@ -107,7 +119,7 @@ public class PinkTeamAuto2 extends LinearOpMode {
         while (opModeIsActive())
         {
             // Gyro reads from 0 to 360.  For PID, we must use +/- so convert
-            currentHeading = robot.gyro.getHeading();
+            currentHeading = -robot.gyro.getIntegratedZValue();
             angularVel = currentHeading - previousHeading;
             previousHeading = currentHeading;
 
@@ -120,24 +132,25 @@ public class PinkTeamAuto2 extends LinearOpMode {
             leftWheelPosPrevious = leftWheelPos;
             rightWheelPosPrevious = rightWheelPos;
 
+
             switch (autoStep) {
                 case 0:     // Init
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
-                    if (PinkNavigate.resetBasePosition())
+                    if (nav.resetBasePosition())
                     {
-                        PinkNavigate.runWithoutEncoders();
+                        nav.runWithoutEncoders();
                         time.reset();  // Mark time for delay reference
                         autoStep = 10;
                     }
                     break;
                 }
-                case 1:     // Delay if need be
+                case 10:     // Delay if need be
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
+                    flywheel = 1;
                     if ((time.seconds()) >= delaySeconds)
                     {
-                        robot.gyro.resetZAxisIntegrator();
                         autoStep = 20;
                     }
                     break;
@@ -145,10 +158,13 @@ public class PinkTeamAuto2 extends LinearOpMode {
                 case 20:     // Drive straight out to clear the ramp
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
+                    Collector = 1;
+                    flywheel =1;
                     targetAngle = 0;
                     targetDistance = 34;    //34
-                    if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
+                    if (nav.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.5))
                     {
+                        Collector = 1;
                         time.reset();
                         autoStep = 30;
                     }
@@ -157,15 +173,16 @@ public class PinkTeamAuto2 extends LinearOpMode {
                 case 30:     // Shoot (waiting for now)
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
+                    Collector = 1;
                     targetAngle = 0;
                     targetDistance = 34;    //34
-                    PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7);
+                    nav.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.5);
                     flywheel = 1;
                     if ((time.seconds()) >= 1)
                     {
-                        release = 1;
+                        release = 0.1;
                     }
-                    if ((time.seconds()) >= 2)
+                    if ((time.seconds()) >= 6)
                     {
                         autoStep = 35;
                     }
@@ -174,15 +191,16 @@ public class PinkTeamAuto2 extends LinearOpMode {
                 case 35: //turn to opposing beacon
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
-                    if(blueAlliance){
-                        targetAngle = -4;
+                    Collector = 0;
+                    if(redAlliance){
+                        targetAngle = -12;
                     }
                     else
                     {
-                        targetAngle = 4;
+                        targetAngle = 12;
                     }
                     targetDistance = 34;
-                    if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7)){
+                    if (nav.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.5)){
                         autoStep = 40;
                     }
                 }
@@ -191,7 +209,7 @@ public class PinkTeamAuto2 extends LinearOpMode {
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     targetDistance = 144;
-                    if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
+                    if (nav.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.5))
                     {
                         time.reset();
                         autoStep = 50;
@@ -201,13 +219,14 @@ public class PinkTeamAuto2 extends LinearOpMode {
                 case 50:     // Wait for teleop to start
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
-                    PinkNavigate.stopBase();
+                    nav.stopBase();
                     break;
                 }
             }
               robot.buttonPusher.setPosition(targetBeaconArmPos);
               robot.flywheel.setPower(flywheel);
               robot.release.setPosition(release);
+              robot.Collector.setPower(Collector);
 //            telemetry.addData("Target Position", targetDistance);
 //            telemetry.addData("Current Position", (front_left.getCurrentPosition() + front_left.getCurrentPosition())/206.0);
 //            telemetry.addData("Current Position", (front_left.getCurrentPosition() + front_left.getCurrentPosition())/206.0);

@@ -78,10 +78,13 @@ public class PinkTeamHardware
         back_left   = hwMap.dcMotor.get("back_left");
         back_right  = hwMap.dcMotor.get("back_right");
 
-        gyro        = hwMap.get(ModernRoboticsI2cGyro.class,"gyro");
+        // gyro        = hwMap.get(ModernRoboticsI2cGyro.class,"gyro");
+
+        gyro        = (ModernRoboticsI2cGyro)hwMap.gyroSensor.get("gyro");
+
         buttonPusher = hwMap.servo.get("buttonPusher");
         colorSensor = hwMap.get(ModernRoboticsI2cColorSensor.class,"colorSensor");
-        bwSensor    = hwMap.lightSensor.get("bwSensor");
+        //bwSensor    = hwMap.lightSensor.get("bwSensor");
 
         front_left.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         front_right.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
@@ -92,6 +95,7 @@ public class PinkTeamHardware
         flywheel = hwMap.dcMotor.get("flywheel");
         Collector = hwMap.dcMotor.get("Collector");
         release = hwMap.servo.get("release");
+
         ultraSound = hwMap.get(ModernRoboticsI2cRangeSensor.class,"ultraSound");
 
 

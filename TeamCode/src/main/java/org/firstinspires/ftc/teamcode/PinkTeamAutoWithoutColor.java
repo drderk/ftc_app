@@ -5,13 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 /**
  Code Modified by Derek Perdomo
  */
-@Autonomous (name= "Shoot and Button")
-public class PinkTeamAuto extends LinearOpMode {
+@Autonomous (name= "Shoot and Button without Color")
+public class PinkTeamAutoWithoutColor extends LinearOpMode {
     PinkTeamHardware robot   = new PinkTeamHardware();   // Use a Pushbot's hardware
     static double leftWheelPosPrevious = 0;     // Used to calculate velocity for PID control
     static double rightWheelPosPrevious = 0;    // Used to calculate velocity for PID control
@@ -25,7 +23,7 @@ public class PinkTeamAuto extends LinearOpMode {
 
     // Other preset positions are defined in PinkTeleop.java
     static final double BUTTON_PUSH_POS = 1;
-    static final double BUTTON_PUSH_NEUTRAL = 90;
+    static final double BUTTON_PUSH_NEUTRAL = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -320,8 +318,7 @@ public class PinkTeamAuto extends LinearOpMode {
                     {
                         targetDistance = 40;
                     }
-                    PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7);
-                    if (robot.bwSensor.getLightDetected() > whiteLine)
+                    if (PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7))
                     {
                         time.reset();
                         autoStep = 130;

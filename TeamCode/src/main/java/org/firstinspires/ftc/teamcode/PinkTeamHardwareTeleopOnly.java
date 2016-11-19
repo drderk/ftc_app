@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+import com.qualcomm.robotcore.hardware.LightSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -24,31 +26,31 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Servo channel:  Servo to open left claw:  "left_hand"
  * Servo channel:  Servo to open right claw: "right_hand"
  */
-public class PinkTeamHardwareSensors
+public class PinkTeamHardwareTeleopOnly
 {
     //Motors
-    public DcMotor          front_left         =       null;
-    public DcMotor          front_right        =       null;
-    public DcMotor          back_left          =       null;
-    public DcMotor          back_right         =       null;
-    //public DcMotor          flywheel           =       null;
-    //public DcMotor          Collector          =       null;
-    public ModernRoboticsI2cGyro gyro               =       null;
+    public DcMotor                      front_left         =       null;
+    public DcMotor                      front_right        =       null;
+    public DcMotor                      back_left          =       null;
+    public DcMotor                      back_right         =       null;
+    public DcMotor                      flywheel           =       null;
+    public DcMotor                      Collector          =       null;
 
     //Servos
-    //public Servo            buttonPusher       =       null;
-    //public Servo            release            =       null;
+    public Servo                        buttonPusher       =       null;
+    public Servo                        release            =       null;
 
     //Sensors
-    //public ColorSensor      colorSensor        =       null;
     //public ModernRoboticsI2cRangeSensor ultraSound         =       null;
-
+    //public ModernRoboticsI2cGyro        gyro               =       null;
+    //public LightSensor                  bwSensor           =       null;
+    //public ModernRoboticsI2cColorSensor colorSensor        =       null;
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
 
     /* Constructor */
-    public PinkTeamHardwareSensors(){
+    public PinkTeamHardwareTeleopOnly(){
 
     }
 
@@ -63,22 +65,23 @@ public class PinkTeamHardwareSensors
         back_left   = hwMap.dcMotor.get("back_left");
         back_right  = hwMap.dcMotor.get("back_right");
 
-        gyro        = (ModernRoboticsI2cGyro)hwMap.gyroSensor.get("gyro");
-        //buttonPusher = hwMap.servo.get("buttonPusher");
-        //colorSensor = hwMap.colorSensor.get("colorSensor");
+        //gyro        = hwMap.get(ModernRoboticsI2cGyro.class,"gyro");
+        buttonPusher = hwMap.servo.get("buttonPusher");
+        //colorSensor = hwMap.get(ModernRoboticsI2cColorSensor.class,"colorSensor");
+        //bwSensor    = hwMap.lightSensor.get("bwSensor");
 
         front_left.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         front_right.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         back_left.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         back_right.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        //colorSensor = hwMap.colorSensor.get("colorSensor");
         //IR_sensor1 = hwMap.irSeekerSensor.get("IR_sensor1");
         //IR_sensor2 = hwMap.irSeekerSensor.get("IR_sensor2");
-        //flywheel = hwMap.dcMotor.get("flywheel");
-        //Collector = hwMap.dcMotor.get("Collector");
-        //buttonPusher = hwMap.servo.get("buttonPusher");
-        //release = hwMap.servo.get("release");
-        //ultraSound = hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultraSound");
+        flywheel = hwMap.dcMotor.get("flywheel");
+        Collector = hwMap.dcMotor.get("Collector");
+        release = hwMap.servo.get("release");
+        //ultraSound = hwMap.get(ModernRoboticsI2cRangeSensor.class,"ultraSound");
+
+
         // Set all motors to zero power
         front_left.setPower(0);
         front_right.setPower(0);
@@ -86,11 +89,11 @@ public class PinkTeamHardwareSensors
         back_right.setPower(0);
 
         // Set all motors to run without encode
-        // May want to use RUN_USING_ENCODERS if encoders are installed.
-        front_left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        front_right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        back_right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        back_left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // May want to use RUN_WITHOUT_ENCODERS if encoders are installed.
+        front_left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        front_right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        back_right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        back_left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos
     }

@@ -85,19 +85,23 @@ public class SensorsTest extends OpMode{
      */
     @Override
     public void loop() {
-        double US = robot.ultraSound.getDistance(DistanceUnit.INCH);
-        double GyroReading = robot.gyro.getHeading();
-        double leftEncoder = robot.front_left.getCurrentPosition();
-        double rightEncoder = robot.front_right.getCurrentPosition();
-
+        double INCHES = 54.45;
+        //double US = robot.ultraSound.getDistance(DistanceUnit.INCH);
+        double GyroReading = -robot.gyro.getIntegratedZValue();
+        double leftEncoder = robot.front_left.getCurrentPosition() / INCHES;
+        double rightEncoder = robot.front_right.getCurrentPosition() / INCHES;
+        double leftEncoderRAW = robot.front_left.getCurrentPosition();
+        double rightEncoderRAW = robot.front_right.getCurrentPosition();
         if (gamepad1.a){
             robot.front_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.front_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
         telemetry.addData("Left Encoder", leftEncoder);
         telemetry.addData("Right Encoder", rightEncoder);
+        telemetry.addData("Left Encoder RAW", leftEncoderRAW);
+        telemetry.addData("Right Encoder RAW", rightEncoderRAW);
         telemetry.addData("Hit A to reset", "Hit A to reset");
-        telemetry.addData("Ultrasonic",US);
+        //telemetry.addData("Ultrasonic",US);
         telemetry.addData("Gyro",GyroReading);
         updateTelemetry(telemetry);
     }
