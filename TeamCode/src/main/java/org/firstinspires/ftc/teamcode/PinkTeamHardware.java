@@ -50,14 +50,14 @@ public class PinkTeamHardware
     public DcMotor                      Collector          =       null;
 
     //Servos
-    public Servo                        buttonPusher       =       null;
-    public Servo                        release            =       null;
+    public Servo                        beaconPusher       =       null;
+    public Servo                        ballFeeder         =       null;
 
     //Sensors
     public ModernRoboticsI2cRangeSensor ultraSound         =       null;
     public ModernRoboticsI2cGyro        gyro               =       null;
-    public LightSensor                  bwSensor           =       null;
     public ModernRoboticsI2cColorSensor colorSensor        =       null;
+
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
@@ -72,32 +72,29 @@ public class PinkTeamHardware
         // Save reference to Hardware map
         hwMap = ahwMap;
 
-        // Define and Initialize Motors
+        //  Motors
         front_left   = hwMap.dcMotor.get("front_left");
         front_right  = hwMap.dcMotor.get("front_right");
         back_left   = hwMap.dcMotor.get("back_left");
         back_right  = hwMap.dcMotor.get("back_right");
 
-        // gyro        = hwMap.get(ModernRoboticsI2cGyro.class,"gyro");
+        flywheel = hwMap.dcMotor.get("flywheel");
+        Collector = hwMap.dcMotor.get("Collector");
 
-        gyro        = (ModernRoboticsI2cGyro)hwMap.gyroSensor.get("gyro");
+        // Servos
+        beaconPusher = hwMap.servo.get("beaconPusher");     // Slider Beacon Pusher
+        ballFeeder = hwMap.servo.get("ballFeeder");               // Ball Feeder
 
-        buttonPusher = hwMap.servo.get("buttonPusher");
-        colorSensor = hwMap.get(ModernRoboticsI2cColorSensor.class,"colorSensor");
-        //bwSensor    = hwMap.lightSensor.get("bwSensor");
+        // Sensors
+        gyro = (ModernRoboticsI2cGyro)hwMap.gyroSensor.get("gyro");
+        colorSensor = (ModernRoboticsI2cColorSensor)hwMap.colorSensor.get("colorSensor");
+        ultraSound =  hwMap.get(ModernRoboticsI2cRangeSensor.class, "ultraSound");
 
+        // *** Motor Configuration
         front_left.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         front_right.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         back_left.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         back_right.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        //IR_sensor1 = hwMap.irSeekerSensor.get("IR_sensor1");
-        //IR_sensor2 = hwMap.irSeekerSensor.get("IR_sensor2");
-        flywheel = hwMap.dcMotor.get("flywheel");
-        Collector = hwMap.dcMotor.get("Collector");
-        release = hwMap.servo.get("release");
-
-        ultraSound = hwMap.get(ModernRoboticsI2cRangeSensor.class,"ultraSound");
-
 
         // Set all motors to zero power
         front_left.setPower(0);
@@ -107,10 +104,11 @@ public class PinkTeamHardware
 
         // Set all motors to run without encode
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        front_left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        front_right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        back_right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        back_left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //front_right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //back_left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         // Define and initialize ALL installed servos
     }

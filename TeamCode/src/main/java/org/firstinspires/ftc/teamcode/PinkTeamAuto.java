@@ -138,7 +138,7 @@ public class PinkTeamAuto extends LinearOpMode {
                     }
                     break;
                 }
-                case 10:     // Delay if need be
+                case 1:     // Delay if need be
                 {
                     targetBeaconArmPos = BUTTON_PUSH_NEUTRAL;
                     if ((time.seconds()) >= delaySeconds)
@@ -321,11 +321,7 @@ public class PinkTeamAuto extends LinearOpMode {
                         targetDistance = 40;
                     }
                     PinkNavigate.driveToPos(targetDistance, targetAngle, currentHeading, avgWheelVel, angularVel, 0.7);
-                    if (robot.bwSensor.getLightDetected() > whiteLine)
-                    {
-                        time.reset();
-                        autoStep = 130;
-                    }
+
                     break;
                 }
                 case 130:     // check color
@@ -433,9 +429,9 @@ public class PinkTeamAuto extends LinearOpMode {
                     break;
                 }
             }
-              robot.buttonPusher.setPosition(targetBeaconArmPos);
+              robot.beaconPusher.setPosition(targetBeaconArmPos);
               robot.flywheel.setPower(flywheel);
-              robot.release.setPosition(release);
+              robot.ballFeeder.setPosition(release);
 //            telemetry.addData("Target Position", targetDistance);
 //            telemetry.addData("Current Position", (front_left.getCurrentPosition() + front_left.getCurrentPosition())/206.0);
 //            telemetry.addData("Current Position", (front_left.getCurrentPosition() + front_left.getCurrentPosition())/206.0);

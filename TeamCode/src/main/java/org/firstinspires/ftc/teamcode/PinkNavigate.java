@@ -9,10 +9,10 @@ import com.qualcomm.robotcore.util.Range;
 
 public class PinkNavigate
 {
-    public static PinkTeamHardware robot       = null; // new PinkTeamHardware();
+    public static PinkTeamHardware robot = null;
 
 
-    static final double COUNTS_PER_INCH = 53.45;  // Base travel
+    static final double COUNTS_PER_INCH = 54;  // Base travel
     static final double POSITION_THRESHOLD = 30.0;   // Counts
     static final double ANGLE_THRESHOLD = 2.0;     // Degrees
 
@@ -33,8 +33,8 @@ public class PinkNavigate
         double angularError = targetAngle - currentAngle;
 
         // Determine the baseline motor speed command
-        motorCmd = PinkPD.getMotorCmd(0.004, 0.002, linearError, linearVelocity);
-        motorCmd = Range.clip(motorCmd, -0.95, 0.95);
+        motorCmd = PinkPD.getMotorCmd(0.001, 0.0005, linearError, linearVelocity);
+        motorCmd = Range.clip(motorCmd, -0.45, 0.45);
 
         // Determine and add the angle offset
         angleOffset = PinkPD.getMotorCmd(0.04, 0.04, angularError, angularVelocity);
@@ -88,7 +88,7 @@ public class PinkNavigate
     public static boolean resetBasePosition()
     {
         boolean resetStatus = false;
-        robot.gyro.resetZAxisIntegrator();
+
         robot.front_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.front_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         if ((robot.front_left.getCurrentPosition()==0)&&(robot.front_right.getCurrentPosition()==0))

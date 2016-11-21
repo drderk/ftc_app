@@ -1,98 +1,44 @@
-/*
-Copyright (c) 2016 Robert Atkinson
 
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted (subject to the limitations in the disclaimer below) provided that
-the following conditions are met:
-
-Redistributions of source code must retain the above copyright notice, this list
-of conditions and the following disclaimer.
-
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
-
-Neither the name of Robert Atkinson nor the names of his contributors may be used to
-endorse or promote products derived from this software without specific prior
-written permission.
-
-NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
-LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESSFOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
-/**
- * This file provides basic Telop driving for a Pushbot robot.
- * The code is structured as an Iterative OpMode
- *
- * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
- * All device access is managed through the HardwarePushbot class.
- *
- * This particular OpMode executes a basic Tank Drive Teleop for a PushBot
- * It raises and lowers the claw using the Gampad Y and A buttons respectively.
- * It also opens and closes the claws slowly using the left and right Bumper buttons.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
+// *************************************************************************************************
+// TELE-OP - 2016-2017 - Velocity Vortex - Pink Alliance
+// *************************************************************************************************
 
-@TeleOp(name="Teleop v.1.7")
+@TeleOp(name="Teleop v.1.6")
 public class PinkTeamTeleop extends OpMode{
-    PinkTeamHardwareTeleopOnly robot       = new PinkTeamHardwareTeleopOnly(); // This is our robots electronics. Go to HardwarePushbot to add hardware.
-    double left;
-    double right;
-    double collector;
-    double buttonPos;
-    double flywheel;
-    double release;
-    //public boolean getFlywheelSpeed;
-    //enum shooting {prepare, shoot, reload}
-    //int shooting = 1;
-    /* Declare OpMode members. */
+    PinkTeamHardware robot = new PinkTeamHardware(); // This is our robots electronics. Go to HardwarePushbot to add hardware.
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
+    // Local Variables
+    double leftJoystick = 0;
+    double rightJoystick = 0;
+    double collectorPower = 0;
+    double pusherPower = 0;
+    double flywheelPower = 0;
+    double ballFeedPosition = 0;
+    private ElapsedTime time = new ElapsedTime();
+    double CPS = (robot.flywheel.getCurrentPosition() / time.seconds());
+
+    // Code to run ONCE when the driver hits INIT
     @Override
     public void init() {
-        /* Initialize the hardware variables.
-         * The init() method of the hardware class does all the work here
-         */
-        left = 0;
-        right = 0;
-        collector = 0;
-        buttonPos = 0;
-        release = 0;
-        flywheel = 0;
-
+        // Init Robot Hardware
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Good Luck and Have Fun Drivers");    //
-        updateTelemetry(telemetry);
+        telemetry.addData("Say", "Good Luck and Have Fun Drivers");
+        telemetry.update();
     }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
+    // Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
     @Override
     public void init_loop() {
     }
@@ -109,67 +55,84 @@ public class PinkTeamTeleop extends OpMode{
      */
     @Override
     public void loop() {
-        //Base Driver Code
+        // *****************************************************
+        // ****************** Driver Code **********************
+
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-        left = -gamepad1.left_stick_y;
-        right = -gamepad1.right_stick_y;
+        leftJoystick = -gamepad1.left_stick_y;      // Left Joystick
+        rightJoystick = -gamepad1.right_stick_y;    // Right Joystick
 
-        //Collect
+        // Ball Collector
         if(gamepad1.left_trigger > 0.1){
-            collector = 1;
+            collectorPower = 1;     // Load Ball
         }
-        //Eject
         else if(gamepad1.right_trigger > 0.1) {
-            collector = -1;
-        }
-        //Restore to 0 power
-        else if(gamepad1.right_trigger < 0.1 && gamepad1.left_trigger < 0.1){
-            collector = 0;
-        }
-
-        //Gunner Code
-
-        //Push Button
-         if(gamepad2.x){
-            buttonPos = 1;
-        }
-        //Retract Button
-        else if(gamepad2.b){
-            buttonPos = -1;
+            collectorPower = -1;    // Eject Ball
         }
         else {
-             buttonPos = 0;
-         }
-        //Spin up the Flywheel
+            collectorPower = 0;     // Restore to 0 power
+        }
+
+
+        // Flywheel
         if (gamepad2.right_trigger > 0.1) {
-            flywheel = 0.85;
+            flywheelPower = 0.9;
         }
         else {
-            flywheel = 0;
+            flywheelPower = 0;
         }
-        if (gamepad2.right_bumper){
-            release = 0.1;
+
+        // *****************************************************
+        // ****************** Gunner Code **********************
+
+        // Push Beacon Button
+        if(gamepad2.x)
+        {
+             pusherPower = 1;       // Push Beacon Button (Extend Arm)
+        }
+        else if(gamepad2.b){
+             pusherPower = 0.2;    // Retract Arm
+        } else {
+             pusherPower = 0.5;       // Stop
+         }
+
+        // Ball Feeder
+        if (gamepad2.right_bumper)
+        {
+            ballFeedPosition = 0.2; // Feed Ball (Action)
         }
         else {
-            release = 0.8;
+            ballFeedPosition = 0.8;   // Block ball
         }
+
+        // Motor Power (Drive Train)
+        robot.front_left.setPower(leftJoystick);
+        robot.front_right.setPower(rightJoystick);
+        robot.back_left.setPower(leftJoystick);
+        robot.back_right.setPower(rightJoystick);
+
+        // Ball Collector Speed/Direction
+        robot.Collector.setPower(collectorPower);
+
+        // Flywheel
+        robot.flywheel.setPower(flywheelPower);
+
+        // Feed the ball in the collector using the ball feed servo
+        robot.ballFeeder.setPosition(ballFeedPosition);
 
         //Set Values Below
-        robot.release.setPosition(release);
-        robot.buttonPusher.setPosition(buttonPos);
-        robot.Collector.setPower(collector);
-        robot.flywheel.setPower(flywheel);
-        robot.front_left.setPower(left);
-        robot.front_right.setPower(right);
-        robot.back_left.setPower(left);
-        robot.back_right.setPower(right);
-        // Send telemetry message to signify robot running;
-        telemetry.addData("left",  "%.2f", left);
-        telemetry.addData("right", "%.2f", right);
-        telemetry.addData("release position",robot.release.getPosition());
-        telemetry.addData("button position",robot.buttonPusher.getPosition());
+        robot.beaconPusher.setPosition(pusherPower);
 
-        updateTelemetry(telemetry);
+
+        // **** Telemetry (Phone messages)
+        // Send telemetry message to signify robot running;
+        telemetry.addData("Left Power",  "%.2f", leftJoystick);
+        telemetry.addData("Right Power", "%.2f", rightJoystick);
+        telemetry.addData("Ball Feeder Position", robot.ballFeeder.getPosition());
+        telemetry.addData("Beacon Arm Power", robot.beaconPusher.getPosition());
+        telemetry.addData("Flywheel Rpm", CPS);
+
+        telemetry.update(); // Refresh the phone messages
     }
 
     /*
