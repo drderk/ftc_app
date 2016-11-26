@@ -14,7 +14,7 @@ public class PinkNavigate
 
     static final double COUNTS_PER_INCH = 54;  // Base travel
     static final double POSITION_THRESHOLD = 30.0;   // Counts
-    static final double ANGLE_THRESHOLD = 2.0;     // Degrees
+    static final double ANGLE_THRESHOLD = 5.0;     // Degrees
 
     // Tank drive two wheels to target positions in inches.
     // Returns true when both arrive at the target.
@@ -33,11 +33,11 @@ public class PinkNavigate
         double angularError = targetAngle - currentAngle;
 
         // Determine the baseline motor speed command
-        motorCmd = PinkPD.getMotorCmd(0.001, 0.0005, linearError, linearVelocity);
-        motorCmd = Range.clip(motorCmd, -0.45, 0.45);
+        motorCmd = PinkPD.getMotorCmd(0.004, 0.002, linearError, linearVelocity);
+        motorCmd = Range.clip(motorCmd, -0.5, 0.5);
 
         // Determine and add the angle offset
-        angleOffset = PinkPD.getMotorCmd(0.04, 0.04, angularError, angularVelocity);
+        angleOffset = PinkPD.getMotorCmd(0.02, 0.02, angularError, angularVelocity);
         leftMotorCmd = motorCmd + angleOffset;
         rightMotorCmd = motorCmd - angleOffset;
         leftMotorCmd = Range.clip(leftMotorCmd, -1.0, 1.0);
@@ -54,7 +54,7 @@ public class PinkNavigate
         robot.back_right.setPower(rightMotorCmd);
         if((Math.abs(targetPosCounts - currentPosCounts)<POSITION_THRESHOLD)&&(Math.abs(angleErrorDegrees)<ANGLE_THRESHOLD))
         {
-            return true;
+             return true;
         } else
         {
             return false;

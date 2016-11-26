@@ -89,6 +89,7 @@ public class SensorsTest extends OpMode{
         double GyroReading = -robot.gyro.getIntegratedZValue();
         double leftEncoder = robot.front_left.getCurrentPosition();
         double rightEncoder = robot.front_right.getCurrentPosition();
+        double color = robot.colorSensor.blue();
 
         if (gamepad1.a){
             robot.front_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -99,6 +100,7 @@ public class SensorsTest extends OpMode{
         telemetry.addData("Hit A to reset", "Hit A to reset");
         telemetry.addData("Ultrasonic",US);
         telemetry.addData("Gyro",GyroReading);
+        telemetry.addData("Color", color);
         updateTelemetry(telemetry);
     }
 

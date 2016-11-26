@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -24,8 +25,14 @@ public class PinkTeamTeleop extends OpMode{
     double pusherPower = 0;
     double flywheelPower = 0;
     double ballFeedPosition = 0;
-    private ElapsedTime time = new ElapsedTime();
-    double CPS = (robot.flywheel.getCurrentPosition() / time.seconds());
+    double CPS = 0;
+    private ElapsedTime time = new ElapsedTime(); //delete in time for tournament
+    int timer = 1;
+    long lastPosition = 0;
+    int lastMaxSpeed = 0;
+    int maxSpeed = 1180;
+    boolean shoot = false;
+
 
     // Code to run ONCE when the driver hits INIT
     @Override
@@ -55,6 +62,13 @@ public class PinkTeamTeleop extends OpMode{
      */
     @Override
     public void loop() {
+        if((Math.abs(CPS - maxSpeed))<110)
+        {
+            shoot = true;
+        } else
+        {
+            shoot = false;
+        }
         // *****************************************************
         // ****************** Driver Code **********************
 
@@ -74,16 +88,30 @@ public class PinkTeamTeleop extends OpMode{
         }
 
 
+        // *****************************************************
+        // ****************** Gunner Code **********************
         // Flywheel
         if (gamepad2.right_trigger > 0.1) {
             flywheelPower = 0.9;
+            switch (timer){
+                case 1:
+                    time.reset();
+                    timer = 2;
+                    break;
+                case 2:
+                    CPS = ((robot.flywheel.getCurrentPosition() - lastPosition) / time.seconds()); //delete in time for tournament
+                    if(time.seconds() > 2){
+                        time.reset();
+                        lastPosition = robot.flywheel.getCurrentPosition();
+                    }
+                    break;
+            }
         }
         else {
+            timer = 1;
             flywheelPower = 0;
+            time.reset();
         }
-
-        // *****************************************************
-        // ****************** Gunner Code **********************
 
         // Push Beacon Button
         if(gamepad2.x)
@@ -97,12 +125,21 @@ public class PinkTeamTeleop extends OpMode{
          }
 
         // Ball Feeder
-        if (gamepad2.right_bumper)
+        if (gamepad2.right_bumper && shoot)
         {
             ballFeedPosition = 0.2; // Feed Ball (Action)
         }
         else {
             ballFeedPosition = 0.8;   // Block ball
+        }
+        if (gamepad2.dpad_up){
+            maxSpeed = (lastMaxSpeed + 10);
+        }
+        else if (gamepad2.dpad_down) {
+            maxSpeed = (lastMaxSpeed - 10);
+        }
+        else {
+            lastMaxSpeed = maxSpeed;
         }
 
         // Motor Power (Drive Train)
@@ -123,6 +160,8 @@ public class PinkTeamTeleop extends OpMode{
         //Set Values Below
         robot.beaconPusher.setPosition(pusherPower);
 
+        robot.flywheel.setMaxSpeed(maxSpeed);
+
 
         // **** Telemetry (Phone messages)
         // Send telemetry message to signify robot running;
@@ -130,7 +169,9 @@ public class PinkTeamTeleop extends OpMode{
         telemetry.addData("Right Power", "%.2f", rightJoystick);
         telemetry.addData("Ball Feeder Position", robot.ballFeeder.getPosition());
         telemetry.addData("Beacon Arm Power", robot.beaconPusher.getPosition());
-        telemetry.addData("Flywheel Rpm", CPS);
+        telemetry.addData("Flywheel CPS", CPS); //delete in time for tournament
+        telemetry.addData("Flywheel getMaxSpeed", robot.flywheel.getMaxSpeed()); //delete in time for tournament
+        telemetry.addData("Can Shoot?", shoot); //delete in time for tournament
 
         telemetry.update(); // Refresh the phone messages
     }
